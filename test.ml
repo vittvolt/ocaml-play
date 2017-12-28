@@ -9,11 +9,20 @@ let rec last lst =
   | h::[] -> Some h
   | h::r -> last r
 
-let l = [ 1; 2; 3; 10 ]
+let rec last_two lst =
+  match lst with
+  | [] -> None
+  | [_] -> None
+  | [a; b] -> Some (a, b)
+  | a::b::r -> last_two (b::r)
 
-let r = last l
+let findAt index lst =
+  if List.length lst <= index then None
+  else
+    List.nth lst index
 
-let () = 
-  match r with
-  | None -> Printf.printf "None...\n"
-  | Some k -> Printf.printf "%d\n" k
+
+    
+let l = [ 1; 2; 3; 10 ];;
+
+let ll = List.map (fun x -> Some x) l;;
