@@ -21,6 +21,22 @@ let findAt index lst =
   else
     List.nth lst index
 
+let rec length lst =
+  let rec findLen lst len =
+    match lst with
+    | [] -> len
+    | h::r -> findLen r len + 1
+  in
+  findLen lst 0
+
+let rev lst =
+  let rec reverse lst result =
+    match lst with
+    | [] -> result
+    | h::r -> reverse r (h::result)
+  in
+  reverse lst []
+
 
     
 let l = [ 1; 2; 3; 10 ];;
