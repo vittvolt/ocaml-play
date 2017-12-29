@@ -37,8 +37,40 @@ let rev lst =
   in
   reverse lst []
 
+let is_palindrome lst =
+  lst = List.rev lst
 
-    
-let l = [ 1; 2; 3; 10 ];;
+type 'a node = 
+  | One of 'a
+  | Many of 'a node list
+
+let flatten lst =
+  let rec f lst result =
+    match lst with
+    | One o -> o::result
+    | Many n -> (
+      match n with
+      | [] -> result
+      | h::r -> (f h []) @ (f (Many r) result)
+    )
+  in
+  f lst []
+
+let compress lst =
+  let rec get lst prev result =
+    match lst with
+    | [] -> result
+    | h::r -> (
+      if h = prev then get r prev result
+      else get r h (h::result)
+    )
+  in
+  match lst with
+  | [] -> []
+  | h::r -> List.rev (get r h [h])
+
+let l = [ 1; 2; 3; 10 ]
 
 let ll = List.map (fun x -> Some x) l;;
+
+flatten (Many [ One "a" ; Many [ One "b" ; Many [ One "c" ; One "d" ] ; One "e" ] ]);;
