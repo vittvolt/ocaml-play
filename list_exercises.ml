@@ -1,3 +1,5 @@
+(* My implementation for the 99 Ocaml exercises, list part *)
+
 let rec sum lst =
   match lst with 
   | [] -> 0
@@ -56,6 +58,7 @@ let flatten lst =
   in
   f lst []
 
+(* #8 compress *)
 let compress lst =
   let rec get lst prev result =
     match lst with
@@ -68,6 +71,90 @@ let compress lst =
   match lst with
   | [] -> []
   | h::r -> List.rev (get r h [h])
+
+(* #9 pack *)
+let pack lst =
+  let rec f lst sublst result =
+    match lst with
+    | a::((b::r) as k) -> (
+      if a = b then f k (a::sublst) result
+      else (
+        let temp = a::sublst in
+        f k [] (temp::result)
+      )
+    )
+    | [k] -> let temp = k::sublst in temp::result
+    | [] -> sublst::result
+  in
+  List.rev (f lst [] [])
+
+(* #10, #11 encode *)
+let encode lst = 
+  let rec f lst subcount result =
+    match lst with
+    | a::((b::r) as k) -> (
+      if a = b then f k (subcount + 1) result
+      else (
+        let temp = (subcount, a) in
+        f k 1 (temp::result)
+      )
+    )
+    | [k] -> let temp = (subcount, k) in temp::result
+    | [] -> result
+  in
+  List.rev (f lst 1 [])
+
+type 'a rle =
+  | One of 'a
+  | Many of int * 'a;;
+
+let encode_rle lst =
+  let rec f lst subcount result =
+    match lst with
+    | a::((b::r) as k) -> (
+      if a = b then f k (subcount + 1) result
+      else (
+        if subcount = 1 then f k 1 ((One a)::result)
+        else (
+          let temp = Many (subcount, a) in
+          f k 1 (temp::result)
+        )
+      )
+    )
+    | [k] -> (
+      if subcount = 1 then (One k)::result
+      else (
+        let temp = Many (subcount, k) in
+        temp::result
+      )
+    )
+    | [] -> result
+  in
+  List.rev (f lst 1 [])
+
+(* #12 decode *)
+let decode_rle lst =
+  let rec n_elem elem n r =
+    if n > 0 then n_elem elem (n - 1) (elem::r)
+    else r
+  in
+  let rec f lst result =
+    match lst with
+    | [] -> result
+    | (One o)::r -> f r (o::result)
+    | (Many (count, e))::r -> f r (n_elem e count result)
+  in
+  List.rev (f lst [])
+
+let duplicate lst = 
+  let rec f lst result =
+    match lst with
+    | h::r -> f r (h::h::result)
+    | [] -> result
+  in 
+  List.rev (f lst [])
+
+
 
 let l = [ 1; 2; 3; 10 ]
 
