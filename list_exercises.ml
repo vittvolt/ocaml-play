@@ -154,6 +154,94 @@ let duplicate lst =
   in 
   List.rev (f lst [])
 
+let replicate lst cnt =
+  let rec n_elem elem n r =
+    if n > 0 then n_elem elem (n - 1) (elem::r)
+    else r
+  in
+  let rec f lst result =
+    match lst with
+    | [] -> result
+    | h::r -> (
+      let temp = n_elem h cnt result in
+      f r temp
+    )
+  in
+  List.rev (f lst [])
+
+let drop lst n =
+  let rec f lst count result =
+    match lst with
+    | [] -> result
+    | h::r -> (
+      if count = 1 then f r n result
+      else f r (count - 1) (h::result)
+    )
+  in
+  List.rev (f lst n [])
+
+let split lst len =
+  if len >= List.length lst then
+    (lst, [])
+  else (
+    let rec f lst count result =
+      match lst with
+      | [] -> failwith "this should not happen"
+      | h::r -> (
+        if count = 0 then ((List.rev result), h::r)
+        else f r (count - 1) (h::result)
+      )
+    in
+    f lst len []
+  )
+
+let slice lst i k =
+  if i > k || k >= List.length lst then
+    invalid_arg "invalid parameter(s)"
+  else
+    let rec f lst index result =
+      match lst with
+      | [] -> failwith "this should not happen"
+      | h::r -> (
+        if index >= i && index <= k then f r (index + 1) (h::result)
+        else if index > k then List.rev result
+        else f r (index + 1) result
+      )
+    in
+    f lst 0 []
+
+let rotate lst num =
+  let len = List.length lst in
+  let count = (
+    if num >= 0 then num mod len
+    else (num mod len) + len
+  )
+  in
+  let rec f lst count right =
+    match lst with
+    | [] -> []
+    | h::r -> (
+      if count = 0 then (h::r) @ (List.rev right)
+      else f r (count - 1) (h::right)
+    )
+  in 
+  f lst count []
+
+let remove_at index lst =
+  if index >= List.length lst then 
+    invalid_arg "invalid parameter"
+  else
+    let rec f lst count result =
+      match lst with
+      | [] -> result
+      | h::r -> (
+        if count = index then
+          f r (count + 1) result
+        else
+          f r (count + 1) (h::result)
+      )
+    in
+    List.rev (f lst 0 [])
 
 
 let l = [ 1; 2; 3; 10 ]
