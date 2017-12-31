@@ -18,10 +18,13 @@ let rec last_two lst =
   | [a; b] -> Some (a, b)
   | a::b::r -> last_two (b::r)
 
-let findAt index lst =
-  if List.length lst <= index then None
-  else
-    List.nth lst index
+let rec findAt index lst =
+  match lst with
+  | [] -> None
+  | h::r -> (
+    if index = 0 then h
+    else findAt (index - 1) r
+  )
 
 let rec length lst =
   let rec findLen lst len =
@@ -243,6 +246,65 @@ let remove_at index lst =
     in
     List.rev (f lst 0 [])
 
+let range s e =
+  let rec f a b result =
+   if a = b then a::result
+   else (
+      if a < b then
+        f (a + 1) b (a::result)
+      else
+        f (a - 1) b (a::result)
+   )
+  in
+  List.rev (f s e [])
+
+let rand_select lst num =
+  let () = Random.init 0 in
+  let rec f lst count result =
+    if count = 0 then
+      result
+    else
+      let index = Random.int (List.length lst) in
+      let elem = List.nth lst index in
+      let temp = remove_at index lst in
+      f temp (count - 1) (elem::result)
+  in
+  f lst num []
+  
+let lotto_select n m =
+  rand_select (range 1 m) n
+
+let permutation lst = 
+  rand_select lst (List.length lst)
+
+let rec extract k lst =
+  if k = 0 then [[]]
+  else if k > List.length lst then [] (* tricky! *)
+  else
+    match lst with
+    | [] -> []
+    | h::r -> (
+      let lst1 = List.map (fun a -> h::a) (extract (k - 1) r) in
+      let lst2 = extract k r in
+      lst1 @ lst2
+    )
+
+let rec list_permutation lst =
+  match lst with
+  | [] -> []
+  | [k] -> [[k]] (* Important special case! Otherwise no list of empth list here! *)
+  | _ -> (
+    let f acc elem =
+      let lst2 = List.filter (fun a -> (a <> elem)) lst in
+      let temp = List.map (fun e -> elem::e) (list_permutation lst2) in
+      temp @ acc
+    in
+    List.fold_left f [] lst
+  )
+
+(* #27 *)
+
+(* #28 *)
 
 let l = [ 1; 2; 3; 10 ]
 
